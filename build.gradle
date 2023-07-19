@@ -1,0 +1,107 @@
+plugins {
+    id 'java-library'
+    id 'signing'
+    id('io.github.gradle-nexus.publish-plugin') version '1.3.0'
+}
+
+repositories {
+    mavenLocal()
+    maven {
+        url = uri('https://repo.jenkins-ci.org/public/')
+    }
+
+    maven {
+        url = uri('https://repo.maven.apache.org/maven2/')
+    }
+}
+
+dependencies {
+    api 'org.junit.platform:junit-platform-engine:1.8.1'
+    api 'io.cucumber:gherkin3:3.1.0'
+    api 'io.cucumber:cucumber-java:6.10.2'
+    api 'org.junit.platform:junit-platform-launcher:1.8.1'
+    api 'org.junit.platform:junit-platform-reporting:1.8.1'
+    api 'org.junit.platform:junit-platform-console:1.8.1'
+    api 'com.fasterxml.jackson.core:jackson-databind:2.13.4.1'
+    api 'com.fasterxml.jackson.core:jackson-annotations:2.13.3'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    testImplementation 'org.junit.platform:junit-platform-testkit:1.8.1'
+    testImplementation 'org.json:json:20220320'
+    testImplementation 'org.mockito:mockito-core:3.12.4'
+}
+
+group = 'com.wire.qa'
+description = 'picklejar-engine'
+version = System.getenv("version")
+
+def Properties properties = new Properties()
+properties.load(project.rootProject.file("local.properties").newDataInputStream())
+
+nexusPublishing {
+    repositories {
+        sonatype {
+            username = properties.getProperty("sonatype.username") ?: System.getenv("SONATYPE_USERNAME")
+            password = properties.getProperty("sonatype.password") ?: System.getenv("SONATYPE_PASSWORD")
+        }
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from(components.java)
+
+            pom {
+                name.set("picklejar-engine")
+                description.set("A JUnit 5 Test engine for running cucumber test in Java")
+                url.set("https://github.com/wireapp/picklejar-engine")
+                licenses {
+                    license {
+                        name.set("GPL-3.0")
+                        url.set("https://opensource.org/licenses/GPL-3.0")
+                    }
+                }
+                developers {
+                    developer {
+                        id.set("svenwire")
+                        name.set("Sven Jost")
+                        email.set("sven@wire.com")
+                        organization.set("Wire Swiss GmbH")
+                    }
+                }
+                scm {
+                    connection.set("scm:git:git://github.com/wireapp/picklejar-engine")
+                    developerConnection.set("scm:git:git://github.com/wireapp/picklejar-engine")
+                    url.set("https://github.com/wireapp/picklejar-engine")
+                }
+            }
+        }
+    }
+}
+
+signing {
+    def signingKeyFile = properties.getProperty("signingKeyFile") ?: System.getenv("PGP_PRIVATE_KEY_FILE")
+    def signingKey = new File(signingKeyFile).text
+    def signingPassword = properties.getProperty("signingPassword") ?: System.getenv("PGP_PASSPHRASE")
+    useInMemoryPgpKeys(signingKey, signingPassword)
+    sign publishing.publications.mavenJava
+}
+
+test {
+    useJUnitPlatform()
+    maxHeapSize = '1G'
+
+    testLogging {
+        showStandardStreams = true
+        events "passed", "skipped", "failed"
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+    options.release = 11
+}
+
+tasks.withType(Javadoc) {
+    options.encoding = 'UTF-8'
+}
