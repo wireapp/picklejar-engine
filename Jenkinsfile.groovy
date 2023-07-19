@@ -23,7 +23,7 @@ pipeline {
         stage('Build') {
             steps {
                 withMaven(jdk: 'AdoptiumJDK11', maven: 'M3', options: [junitPublisher(disabled: true)]) {
-                    realtimeJUnit(keepLongStdio: true, testResults: 'target/surefire-reports/TEST*.xml') {
+                    realtimeJUnit(keepLongStdio: true, testResults: 'build/test-results/test/TEST*.xml') {
                         sh './gradlew build'
                     }
                 }
