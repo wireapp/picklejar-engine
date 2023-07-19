@@ -22,13 +22,13 @@ pipeline {
 
         stage('Build') {
             steps {
-                withMaven(jdk: 'AdoptOpenJDK8', maven: 'M3', options: [junitPublisher(disabled: true)]) {
+                withMaven(jdk: 'AdoptiumJDK11', maven: 'M3', options: [junitPublisher(disabled: true)]) {
                     realtimeJUnit(keepLongStdio: true, testResults: 'target/surefire-reports/TEST*.xml') {
-                        sh 'mvn clean package'
+                        sh './gradlew build'
                     }
                 }
-                stash includes: 'target/*.jar', name: 'artifacts'
-                archiveArtifacts artifacts: 'target/*.jar', followSymlinks: false
+                stash includes: 'build/libs/*.jar', name: 'artifacts'
+                archiveArtifacts artifacts: 'build/libs/*.jar', followSymlinks: false
             }
         }
 
@@ -44,8 +44,7 @@ pipeline {
                         unstash 'artifacts'
                         sh(
                             script: """
-                                touch local.properties
-                                version=$version ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository
+                                version=$version deploy=$deploy ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository
                             """
                         )
                     }
