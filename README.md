@@ -273,3 +273,8 @@ Unit tests for the engine can be executed by:
 ```
 ./gradlew clean test
 ```
+
+Run individual test:
+```
+./gradlew clean test --tests="*.generateRelativeFeatureFolder"
+```
