@@ -518,6 +518,9 @@ public class DiscoveryTests {
         File featureFileInSubdirectory = Files.createTempFile(subdirectory.toPath(), "Account", ".feature")
                 .toFile();
 
+        System.out.println("featureFileInRoot: " + featureFileInRoot.toURI());
+        System.out.println("featuresPackageFolders: " + featuresPackageFolders.stream().findFirst().get().toURI());
+
         assertThat(FeatureSelectorResolver.getRelativeFeatureFolder(
                 featureFileInRoot,
                 featuresPackageFolders)).isEqualTo("");
