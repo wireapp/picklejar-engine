@@ -218,6 +218,8 @@ public class FeatureSelectorResolver implements SelectorResolver {
 
     // Only public because of tests
     public static String getRelativeFeatureFolder(File file, Set<File> featuresPackageFolders) {
+        logger.info("file: " + file.toURI());
+        featuresPackageFolders.forEach(folder -> logger.info("folder: " + folder.toURI()));
         Optional<String> relativeFolder = featuresPackageFolders.stream()
                 .map(folder -> folder.toURI().relativize(file.getParentFile().toURI()).getPath())
                 .filter(result -> !result.startsWith(File.separator))
