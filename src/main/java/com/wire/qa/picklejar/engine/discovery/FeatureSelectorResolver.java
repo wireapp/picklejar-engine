@@ -5,13 +5,7 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -218,18 +212,30 @@ public class FeatureSelectorResolver implements SelectorResolver {
 
     // Only public because of tests
     public static String getRelativeFeatureFolder(File file, Set<File> featuresPackageFolders) {
-        logger.info("file: " + file.toURI());
-        featuresPackageFolders.forEach(folder -> logger.info("folder: " + folder.toURI()));
+        // featuresPackageFolders.forEach(folder -> logger.info("Folder: " + folder.getAbsolutePath()));
+        // logger.info("File:   " + file.getAbsolutePath());
         Optional<String> relativeFolder = featuresPackageFolders.stream()
-                .map(folder -> folder.toURI().relativize(file.getParentFile().toURI()).getPath())
-                .filter(result -> !result.startsWith(File.separator))
-                .findFirst();
+                .map(folder -> relativize(folder, file.getParentFile()))
+                .filter(Objects::nonNull)
+                .min(Comparator.comparingInt(String::length));
         if (relativeFolder.isEmpty()) {
             throw new RuntimeException(String.format(
                     "[Discovery] Could not relate any feature package folders to file %s",
                     file.getAbsolutePath()));
         } else {
             return relativeFolder.get();
+        }
+    }
+
+    private static String relativize(File base, File relatable) {
+        // Return empty string when in the same parent directory and null if the base path is no part of
+        // to filter it in the stream later
+        if (relatable.getAbsolutePath().equals(base.getAbsolutePath())) {
+            return "";
+        } else if (relatable.getAbsolutePath().startsWith(base.getAbsolutePath())) {
+            return relatable.getAbsolutePath().substring(base.getAbsolutePath().length() + 1) + "/";
+        } else {
+            return null;
         }
     }
 }

@@ -18,7 +18,11 @@ import org.junit.platform.testkit.engine.EngineTestKit;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -509,7 +513,7 @@ public class DiscoveryTests {
     }
 
     @Test
-    public void generateRelativeFeatureFolder() throws IOException {
+    public void generateRelativeFeatureFolder() throws IOException, URISyntaxException {
         Set<File> featuresPackageFolders = new HashSet<>();
         featuresPackageFolders.add(Files.createTempDirectory(null).toFile());
         File featureFileInRoot = Files.createTempFile(featuresPackageFolders.stream().findFirst().get().toPath(), "Account", ".feature")
@@ -518,6 +522,11 @@ public class DiscoveryTests {
         File featureFileInSubdirectory = Files.createTempFile(subdirectory.toPath(), "Account", ".feature")
                 .toFile();
 
+        assertThat(FeatureSelectorResolver.getRelativeFeatureFolder(
+                new File(new URI("file:/C:/Users/jenkins/Documents/jenkins/workspace/Wrapper_Windows_Experimental_Tests/tests/desktop/target/test-classes/com/wearezeta/auto/desktop/Application.feature")),
+                new HashSet<>(Arrays.asList(new File(new URI("file:/C:/Users/jenkins/Documents/jenkins/workspace/Wrapper_Windows_Experimental_Tests/tests/desktop/target/classes/com/wearezeta/auto/desktop/")),
+                        new File(new URI("file:/C:/Users/jenkins/Documents/jenkins/workspace/Wrapper_Windows_Experimental_Tests/tests/desktop/target/test-classes/com/wearezeta/auto/desktop/"))
+                )))).isEqualTo("");
         assertThat(FeatureSelectorResolver.getRelativeFeatureFolder(
                 featureFileInRoot,
                 featuresPackageFolders)).isEqualTo("");
