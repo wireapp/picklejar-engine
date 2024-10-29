@@ -55,6 +55,7 @@ public class CucumberReportGeneratingListener implements TestExecutionListener {
     public void testPlanExecutionFinished(TestPlan testPlan) {
         try {
             print("[CucumberReport] Test execution finished - Generating Cucumber report...");
+            print(String.format("[CucumberReport] %d Features found.", featureScenarioMap.size()));
             CucumberReport cucumberReport = new CucumberReport();
             for (Map.Entry<Feature, List<Scenario>> entry : featureScenarioMap.entrySet()) {
                 Feature f = entry.getKey();
