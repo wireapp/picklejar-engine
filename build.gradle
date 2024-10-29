@@ -18,8 +18,8 @@ repositories {
 
 dependencies {
     api 'org.junit.platform:junit-platform-engine:1.8.1'
-    api 'io.cucumber:gherkin3:3.1.0'
-    api 'io.cucumber:cucumber-java:6.10.2'
+    api 'io.cucumber:gherkin3:3.1.2'
+    api 'io.cucumber:cucumber-java:7.20.1'
     api 'org.junit.platform:junit-platform-launcher:1.8.1'
     api 'org.junit.platform:junit-platform-reporting:1.8.1'
     api 'org.junit.platform:junit-platform-console:1.8.1'
