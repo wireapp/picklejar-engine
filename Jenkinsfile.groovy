@@ -24,7 +24,7 @@ pipeline {
             steps {
                 withMaven(jdk: 'AdoptiumJDK17', maven: 'M3', options: [junitPublisher(disabled: true)]) {
                     realtimeJUnit(keepLongStdio: true, testResults: 'build/test-results/test/TEST*.xml') {
-                        sh './gradlew build'
+                        sh './gradlew clean build'
                     }
                 }
                 stash includes: 'build/libs/*.jar', name: 'artifacts'

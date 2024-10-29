@@ -41,6 +41,10 @@ if (file("local.properties").exists()) {
     properties.load(project.rootProject.file("local.properties").newDataInputStream())
 }
 
+clean {
+    delete 'target'
+}
+
 test {
     useJUnitPlatform()
     maxHeapSize = '1G'
