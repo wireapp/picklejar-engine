@@ -22,7 +22,7 @@ pipeline {
 
         stage('Build') {
             steps {
-                withMaven(jdk: 'AdoptiumJDK17', maven: 'M3', options: [junitPublisher(disabled: true)]) {
+                withMaven(jdk: 'JDK17', maven: 'M3', options: [junitPublisher(disabled: true)]) {
                     realtimeJUnit(keepLongStdio: true, testResults: 'build/test-results/test/TEST*.xml') {
                         sh './gradlew clean build'
                     }
